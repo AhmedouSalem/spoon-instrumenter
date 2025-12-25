@@ -70,7 +70,7 @@ public class InstrumenterMain {
         // 5) Cleanup
         deleteIfExists(tmp);
 
-        System.out.println("✅ DONE. Runnable instrumented project created at: " + target);
+        System.out.println("DONE. Runnable instrumented project created at: " + target);
         System.out.println("Try:");
         System.out.println("  cd \"" + target + "\"");
         System.out.println("  ./mvnw -DskipTests package");
@@ -136,7 +136,7 @@ public class InstrumenterMain {
         String pom = Files.readString(pomPath, StandardCharsets.UTF_8);
 
         if (pom.contains("logstash-logback-encoder")) {
-            System.out.println("==> pom.xml already contains logstash-logback-encoder ✅");
+            System.out.println("==> pom.xml already contains logstash-logback-encoder ");
             return;
         }
 
@@ -157,12 +157,12 @@ public class InstrumenterMain {
         }
 
         Files.writeString(pomPath, pom, StandardCharsets.UTF_8, StandardOpenOption.TRUNCATE_EXISTING);
-        System.out.println("==> pom.xml patched ✅");
+        System.out.println("==> pom.xml patched");
     }
 
     private static void ensureLogbackSpringXml(Path logbackPath) throws IOException {
         if (Files.exists(logbackPath)) {
-            System.out.println("==> logback-spring.xml already exists ✅");
+            System.out.println("==> logback-spring.xml already exists");
             return;
         }
 
@@ -187,7 +187,7 @@ public class InstrumenterMain {
                 """;
 
         Files.writeString(logbackPath, content, StandardCharsets.UTF_8, StandardOpenOption.CREATE_NEW);
-        System.out.println("==> logback-spring.xml created ✅");
+        System.out.println("==> logback-spring.xml created");
     }
 
     private static void deleteIfExists(Path path) throws IOException {
