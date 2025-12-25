@@ -33,7 +33,7 @@ public class InstrumenterMain {
         deleteIfExists(target);
         copyWholeProject(original, target);
 
-        // 2) Run Spoon into a TEMP folder (never directly into target)
+        // 2) Run Spoon into a TEMP folder
         Path tmp = target.resolve(".spoon-tmp");
         deleteIfExists(tmp);
         Files.createDirectories(tmp.resolve("src/main/java"));
@@ -45,7 +45,6 @@ public class InstrumenterMain {
         );
 
 
-        // IMPORTANT: autoImports can break jakarta.persistence imports in noClasspath mode
         launcher.getEnvironment().setAutoImports(false);
         launcher.getEnvironment().setNoClasspath(true);
         launcher.addInputResource(
@@ -78,7 +77,7 @@ public class InstrumenterMain {
         System.out.println("  ./mvnw spring-boot:run");
     }
 
-    /** Copies the full project but excludes: .git/, target/, and the generated logs folder if you want */
+    /** Copies the full project but excludes: .git/, target/ */
     private static void copyWholeProject(Path original, Path target) throws IOException {
         System.out.println("==> Copying project to target (excluding .git/, target/) ...");
 

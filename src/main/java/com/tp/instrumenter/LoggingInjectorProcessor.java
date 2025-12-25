@@ -24,7 +24,6 @@ public class LoggingInjectorProcessor extends AbstractProcessor<CtType<?>> {
             if (m.getBody() == null) continue;
             if (m.isAbstract()) continue;
 
-            // évite double injection si relancé
             if (!m.getBody().getStatements().isEmpty()
                     && m.getBody().getStatement(0).toString().contains("LPS")) {
                 continue;
@@ -46,7 +45,6 @@ public class LoggingInjectorProcessor extends AbstractProcessor<CtType<?>> {
         if (n.startsWith("create") || n.startsWith("add") || n.startsWith("save")
                 || n.startsWith("update") || n.startsWith("delete") || n.startsWith("remove")) return "WRITE";
 
-        // fallback : tu peux aussi mettre "OTHER"
         return "READ";
     }
 
@@ -64,7 +62,6 @@ public class LoggingInjectorProcessor extends AbstractProcessor<CtType<?>> {
 
         field.setType(f.Type().createReference("org.slf4j.Logger"));
 
-        // Fully-qualified, no imports needed:
         String expr = "org.slf4j.LoggerFactory.getLogger(" + clazz.getSimpleName() + ".class)";
         field.setDefaultExpression(f.Code().createCodeSnippetExpression(expr));
 
@@ -75,8 +72,6 @@ public class LoggingInjectorProcessor extends AbstractProcessor<CtType<?>> {
     private CtStatement buildLogStatement(CtClass<?> clazz, CtMethod<?> m, String action) {
         Factory f = getFactory();
 
-        // log.info("LPS", kv("event","DB_OP"), kv("action", "..."), kv("class", "..."), kv("method","..."))
-        // event : on peut mettre DB_READ/DB_WRITE/EXPENSIVE directement pour faciliter Q5
         String event = switch (action) {
             case "WRITE" -> "DB_WRITE";
             case "MOST_EXPENSIVE" -> "MOST_EXPENSIVE_SEARCH";
@@ -91,7 +86,6 @@ public class LoggingInjectorProcessor extends AbstractProcessor<CtType<?>> {
         sb.append(", net.logstash.logback.argument.StructuredArguments.kv(\"class\",\"").append(clazz.getSimpleName()).append("\")");
         sb.append(", net.logstash.logback.argument.StructuredArguments.kv(\"method\",\"").append(m.getSimpleName()).append("\")");
 
-        // Si la méthode a des paramètres du type *Id (Long/long/String), on les log
         for (CtParameter<?> p : m.getParameters()) {
             String pn = p.getSimpleName();
             String pt = p.getType().getSimpleName();
